@@ -9,11 +9,11 @@
 class Solution {
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         //
-        ListNode answer = null;
-        ListNode currentAnswerNode = null;
+        ListNode answer = new ListNode(0); // dummy head to start with
+        ListNode currentAnswerNode = answer;
         ListNode currentNodeA = l1;
         ListNode currentNodeB = l2;
-        int total, remainder, carry=0,x=0,y=0;
+        int total, remainder, carry=0, x=0, y=0;
         
         while (currentNodeA != null || currentNodeB != null) {
             x = (currentNodeA != null) ? currentNodeA.val : 0;
@@ -22,13 +22,8 @@ class Solution {
             remainder = total % 10;
             carry = total / 10;
             
-            if(answer == null){
-                answer = new ListNode(remainder);
-                currentAnswerNode = answer;
-            }else{
-                currentAnswerNode.next = new ListNode(remainder);
-                currentAnswerNode = currentAnswerNode.next;
-            }
+            currentAnswerNode.next = new ListNode(remainder);
+            currentAnswerNode = currentAnswerNode.next;
             
             if(currentNodeA != null) currentNodeA = currentNodeA.next;
             if(currentNodeB != null) currentNodeB = currentNodeB.next;
@@ -38,6 +33,6 @@ class Solution {
             currentAnswerNode.next = new ListNode(carry);
         }
         
-        return answer;
+        return answer.next; // sending list skipping dummy node
     }
 }
