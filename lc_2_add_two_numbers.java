@@ -13,11 +13,15 @@ class Solution {
         ListNode currentAnswerNode = null;
         ListNode currentNodeA = l1;
         ListNode currentNodeB = l2;
-        int total, remainder, carry=0;
-        while (currentNodeA != null && currentNodeB != null) {
-            total = currentNodeA.val + currentNodeB.val + carry;
+        int total, remainder, carry=0,x=0,y=0;
+        
+        while (currentNodeA != null || currentNodeB != null) {
+            x = (currentNodeA != null) ? currentNodeA.val : 0;
+            y = (currentNodeB != null) ? currentNodeB.val : 0;
+            total = x + y + carry;
             remainder = total % 10;
             carry = total / 10;
+            
             if(answer == null){
                 answer = new ListNode(remainder);
                 currentAnswerNode = answer;
@@ -25,29 +29,15 @@ class Solution {
                 currentAnswerNode.next = new ListNode(remainder);
                 currentAnswerNode = currentAnswerNode.next;
             }
-            currentNodeA = currentNodeA.next;
-            currentNodeB = currentNodeB.next;
+            
+            if(currentNodeA != null) currentNodeA = currentNodeA.next;
+            if(currentNodeB != null) currentNodeB = currentNodeB.next;
         }
 
-        
-        ListNode currentBiggerListNode = null;
-        if(currentNodeA != null)
-            currentBiggerListNode = currentNodeA;
-        else
-            currentBiggerListNode = currentNodeB;
-
-        
-        while (currentBiggerListNode != null){
-            total = currentBiggerListNode.val + carry;
-            remainder = total % 10;
-            carry = total / 10;
-            currentAnswerNode.next = new ListNode(remainder);
-            currentAnswerNode = currentAnswerNode.next;
-            currentBiggerListNode = currentBiggerListNode.next;
-        }
         if(carry>0){
             currentAnswerNode.next = new ListNode(carry);
         }
+        
         return answer;
     }
 }
