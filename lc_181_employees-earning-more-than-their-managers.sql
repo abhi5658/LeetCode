@@ -2,8 +2,10 @@
 select
     e1.Name as Employee
 from
-    Employee e1,
+    Employee e1
+left join
     Employee e2
-where
+on
     e1.ManagerId = e2.Id
-    and e1.Salary > e2.Salary
+where
+    e1.Salary > e2.Salary
