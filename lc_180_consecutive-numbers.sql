@@ -5,4 +5,7 @@ from
     Logs l1,
     Logs l2,
     Logs l3
-# result => all combination of three tables mixed => if 7 rows in table => result has 7*7*7 rows with all combinaitons
+where
+    l1.Id = l2.Id - 1
+    and l2.Id = l3.Id - 1
+# result => filter rows matching consecutive Ids from the joined tables e.g. Ids: [1,2,3], [2,3,4]
