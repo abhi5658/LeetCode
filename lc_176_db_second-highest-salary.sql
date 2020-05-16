@@ -1,6 +1,6 @@
 # Write your MySQL query statement below
 select(
-    select 
+    select distinct
         Salary 
     from 
         Employee 
