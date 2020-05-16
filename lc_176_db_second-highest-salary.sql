@@ -2,7 +2,6 @@
 select 
 Salary as SecondHighestSalary 
 from Employee 
-where Salary < 
-(select MAX(Salary) from Employee)
 order by Salary DESC 
-limit 1;
+limit 1
+offset 1;
