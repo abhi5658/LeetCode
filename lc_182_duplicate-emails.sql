@@ -1,9 +1,9 @@
 # Write your MySQL query statement below
-select 
-    Email
+select
+    Email 
 from 
-    Person
-group by
-    Email
-having
-    count(Email) > 1
+    Person 
+group by 
+    Email 
+having 
+    1 < count(*);
