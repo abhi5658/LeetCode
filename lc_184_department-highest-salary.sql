@@ -11,18 +11,15 @@ on
     e.DepartmentId = d.Id
 inner join
     (select
-        d.Id as dId,
+        DepartmentId,
         max(e.Salary) as max
     from
-        Department d,
         Employee e
-    where
-        d.Id = e.DepartmentId
     group by
-        d.Id
-    ) as m
-where 
-    e.DepartmentId = m.dId
+    DepartmentId
+    )  m
+on 
+    e.DepartmentId = m.DepartmentId
     and e.Salary = m.max
 
 
