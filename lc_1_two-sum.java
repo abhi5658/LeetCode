@@ -33,3 +33,20 @@ class Solution {
     return new int[] { 0, 0 };
   }
 }
+
+class Solution { // O(n)
+  public int[] twoSum(int[] nums, int target) {
+    HashMap<Integer, Integer> required = new HashMap<>();
+    required.put(nums[0], 0);
+    for (int i = 1; i < nums.length; i++) {
+      int currentNum = nums[i];
+      Integer findRequired = required.get(target - currentNum);
+      if (findRequired != null) {
+        return new int[] { findRequired.intValue(), i };
+      } else {
+        required.put(nums[i], i);
+      }
+    }
+    return new int[] { 0, 0 };
+  }
+}
