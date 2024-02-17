@@ -2,6 +2,30 @@ import java.util.ArrayList;
 
 class Solution {
   public boolean isValid(String s) {
+    Stack<Character> stack = new Stack<>();
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if (c == '(' || c == '{' || c == '[') { // opening
+        stack.push(c);
+      } else if (!stack.empty()) {
+        char top = stack.peek();
+        if ((top == '(' && c == ')')
+            || (top == '{' && c == '}')
+            || (top == '[' && c == ']')) { // closing with valid
+          stack.pop();
+        } else { // close with invalid bracket e.g. (]
+          return false;
+        }
+      } else { // directly closing
+        return false;
+      }
+    }
+    return stack.empty();
+  }
+}
+
+class Solution {
+  public boolean isValid(String s) {
     int size = s.length();
     if (size % 2 != 0) {
       return false;
