@@ -10,6 +10,13 @@
  * }
  */
 public class Solution {
+  // e.g. list 1-10 end points to 1
+  // s -> 1 2 3 4 5 6 7 8 9 10 1
+  // f -> 1 3 5 7 9 1 3 5 7 9 1
+
+  // e.g. list 1-9 end points to 1
+  // s -> 1 2 3 4 5 6 7 8 9 1
+  // f -> 1 3 5 7 9 2 4 6 8 1
   public boolean hasCycle(ListNode head) { // O(<=n)
     if (head == null)
       return false;
