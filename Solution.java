@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import org.w3c.dom.Node;
 
 /**
  * vscode: Add the folder to Java Source path before running any file
