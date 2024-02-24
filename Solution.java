@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.*;
 
 import org.w3c.dom.Node;
 
@@ -26,50 +29,31 @@ class ListNode {
   }
 }
 
-public class Solution {
-  /**
-   * Definition for singly-linked list.
-   * public class ListNode {
-   * int val;
-   * ListNode next;
-   * ListNode() {}
-   * ListNode(int val) { this.val = val; }
-   * ListNode(int val, ListNode next) { this.val = val; this.next = next; }
-   * }
-   */
+class Solution {
+  public int[] topKFrequent(int[] nums, int k) {
+    Map<Integer, Integer> frequencyMap = new HashMap<Integer, Integer>();
+    for (int num : nums) {
+      frequencyMap.put(num, frequencyMap.getOrDefault(num, 1) + 1);
+    }
+    List<Integer>[] frequencyList = new List[nums.length + 1];
 
-  public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-    ListNode currentSorted = new ListNode(); // 4 [4]
-    ListNode head = currentSorted;
-    // list1 - null
-    // list2 - 4
-    while (list1 != null && list2 != null) {
-      if (head == null) {
-        if (list1.val <= list2.val) {
-          head = list1; // 1
-          list1 = list1.next;
-        } else {
-          head = list2;
-          list2 = list2.next;
+    for (Map.Entry<Integer, Integer> entry : frequencyMap.entrySet()) {
+      if (frequencyList[entry.getValue()] == null) {
+        frequencyList[entry.getValue()] = new ArrayList<Integer>();
+      }
+      frequencyList[entry.getValue()].add(entry.getKey());
+    }
+    int counter = 0;
+    int[] output = new int[k];
+    for (int i = nums.length; i >= 0 && counter < k; i--) {
+      if (frequencyList[i] != null) {
+        while (counter < k && frequencyList[i].size() > 0) {
+          output[counter] = frequencyList[i].remove(0);
+          counter++;
         }
-        currentSorted = head;
-      } else if (list1.val <= list2.val) {
-        currentSorted.next = list1;
-        currentSorted = list1;
-        list1 = list1.next;
-      } else {
-        currentSorted.next = list2;
-        currentSorted = list2;
-        list2 = list2.next;
       }
     }
-    ListNode pending = list1 != null ? list1 : (list2 != null) ? list2 : null;
-    while (pending != null) {
-      currentSorted.next = pending;
-      currentSorted = pending;
-      pending = pending.next;
-    }
-    return head;
+    return output;
   }
 
   public static void printList(ListNode list) {
@@ -91,24 +75,10 @@ public class Solution {
     System.out.println("hey");
     Solution solution = new Solution();
     // System.out.println("aa: " + solution.isAnagram("abca", "aabc"));
-    ListNode a = new ListNode();
-    ListNode a1 = a;
-    ListNode b = new ListNode();
-    ListNode b1 = b;
-    int[] c = new int[] {};
-    int[] d = new int[] { 0 };
-    for (int c2 : c) {
-      ListNode x = new ListNode(c2);
-      a.next = x;
-      a = a.next;
-    }
-    for (int d2 : d) {
-      ListNode x = new ListNode(d2);
-      b.next = x;
-      b = b.next;
-    }
-    ListNode ans = solution.mergeTwoLists(a1.next, b1.next);
-    printList(ans);
+    int[] input = new int[] { 1, 1, 1, 2, 2, 3 };
+
+    int[] ans = solution.topKFrequent(input, 2);
+    System.out.println(ans.toString());
     // int[] aa = solution.twoSum(new int[] { 2, 7, 11, 15 }, 9);
     // System.out.println("aa: " + Arrays.toString(aa));
     // aa = solution.twoSum(new int[] { 3, 2, 4 }, 6);
