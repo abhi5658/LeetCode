@@ -30,32 +30,37 @@ class ListNode {
 }
 
 class Solution {
-  public int[] topKFrequent(int[] nums, int k) {
-    Map<Integer, Integer> frequencyMap = new HashMap<Integer, Integer>();
-    for (int num : nums) {
-      frequencyMap.put(num, frequencyMap.getOrDefault(num, 1) + 1);
-    }
-    List<Integer>[] frequencyList = new List[nums.length + 1];
-
-    for (Map.Entry<Integer, Integer> entry : frequencyMap.entrySet()) {
-      if (frequencyList[entry.getValue()] == null) {
-        frequencyList[entry.getValue()] = new ArrayList<Integer>();
-      }
-      frequencyList[entry.getValue()].add(entry.getKey());
-    }
-    int counter = 0;
-    int[] output = new int[k];
-    for (int i = nums.length; i >= 0 && counter < k; i--) {
-      if (frequencyList[i] != null) {
-        while (counter < k && frequencyList[i].size() > 0) {
-          output[counter] = frequencyList[i].remove(0);
-          counter++;
+  public int findMin(int[] nums) {
+    int left = 0; //
+    int right = nums.length - 1;
+    int mid = -1;
+    while (left < right) {
+      mid = (left + right) / 2;
+      if (nums[left] > nums[right]) {
+        if (nums[left] < nums[mid]) {
+          left = mid;
+        } else if (nums[mid] < nums[right]) {
+          right = mid;
+        } else if (nums[mid] > nums[right]) {
+          right = mid;
+        } else {
+          left = mid + 1;
         }
+      } else {
+        right = left;
       }
+      // if (nums[left] < nums[mid]) { // increasing from left "->/"
+      // left = mid;
+      // } else if (nums[mid] < nums[right]) { // decreasing from right "/<-"
+      // right = mid;
+      // } else if(nums[right] >= nums[mid]){
+      // right = mid;
+      // } else if (nums[left] >= nums[mid]) {
+      // left = mid + 1;
+      // }
     }
-    return output;
+    return nums[(left + right) / 2];
   }
-
   public static void printList(ListNode list) {
     ListNode currNode = list;
 
@@ -77,8 +82,8 @@ class Solution {
     // System.out.println("aa: " + solution.isAnagram("abca", "aabc"));
     int[] input = new int[] { 1, 1, 1, 2, 2, 3 };
 
-    int[] ans = solution.topKFrequent(input, 2);
-    System.out.println(ans.toString());
+    int ans = solution.findMin(new int[] { 3, 4, 5, 1, 2 });
+    System.out.println(ans);
     // int[] aa = solution.twoSum(new int[] { 2, 7, 11, 15 }, 9);
     // System.out.println("aa: " + Arrays.toString(aa));
     // aa = solution.twoSum(new int[] { 3, 2, 4 }, 6);
