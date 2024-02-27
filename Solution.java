@@ -1,8 +1,3 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.*;
 
 import org.w3c.dom.Node;
@@ -30,37 +25,100 @@ class ListNode {
 }
 
 class Solution {
-  public int findMin(int[] nums) {
-    int left = 0; //
-    int right = nums.length - 1;
-    int mid = -1;
-    while (left < right) {
-      mid = (left + right) / 2;
-      if (nums[left] > nums[right]) {
-        if (nums[left] < nums[mid]) {
-          left = mid;
-        } else if (nums[mid] < nums[right]) {
-          right = mid;
-        } else if (nums[mid] > nums[right]) {
-          right = mid;
-        } else {
-          left = mid + 1;
-        }
-      } else {
-        right = left;
-      }
-      // if (nums[left] < nums[mid]) { // increasing from left "->/"
-      // left = mid;
-      // } else if (nums[mid] < nums[right]) { // decreasing from right "/<-"
-      // right = mid;
-      // } else if(nums[right] >= nums[mid]){
-      // right = mid;
-      // } else if (nums[left] >= nums[mid]) {
-      // left = mid + 1;
-      // }
+  public int[] countServers(int n, int[][] logs, int x, int[] queries) {
+    Arrays.sort(logs, (a, b) -> a[1] - b[1]);
+    int[][] queryIndex = new int[queries.length][2];
+    int[] ans = new int[queries.length];
+    for (int i = 0; i < queries.length; i++) {
+      queryIndex[i] = new int[] { queries[i], i };
     }
-    return nums[(left + right) / 2];
+    Arrays.sort(queryIndex, (a, b) -> a[0] - b[0]);
+
+    Map<Integer, Integer> window = new HashMap<>();
+
+    int queryIndexPointer = 0;
+    int queryStart = queryIndex[queryIndexPointer][0] - x;
+    int queryEnd = queryIndex[queryIndexPointer][0];
+    int windowStart = queryStart;
+    int windowEnd = queryStart;
+    int logStart = 0;
+    int logEnd = 0;
+
+    while (queryIndexPointer < queryIndex.length) {
+      boolean initial = (windowStart == windowEnd);
+
+      if (!initial && windowEnd == queryEnd + 1) { // window achieved
+        ans[queryIndex[queryIndexPointer][1]] = n - window.size();
+        queryIndexPointer++;
+        if (queryIndexPointer == queryIndex.length) {
+          break;
+        }
+        queryStart = queryIndex[queryIndexPointer][0] - x;
+        queryEnd = queryIndex[queryIndexPointer][0];
+        if (queryStart <= windowEnd - 1 && windowEnd - 1 < queryEnd) {
+          continue;
+        }
+        if (queryStart > windowEnd - 1) { // far away new window
+          windowStart = queryStart;
+          windowEnd = queryStart;
+          window = new HashMap<>();
+          logStart = logEnd;
+          continue;
+        }
+        // reset
+      }
+
+      // find logs of windowEnd and create set of unique servers at windowEnd
+      // windowEnd is new window element
+      while (windowEnd < queryEnd + 1) {
+        if (logEnd == logs.length) {
+          windowEnd++;
+          continue;
+        }
+        int[] log = logs[logEnd];
+        int server = log[0];
+        int time = log[1];
+        if (time < windowStart) {
+          logStart++;
+          logEnd++;
+        } else if (time == windowEnd) {
+          window.put(server, window.getOrDefault(server, 0) + 1);
+          logEnd++;
+        } else if (time > windowEnd) {
+          windowEnd++;
+        }
+      }
+
+      // remove out of window element at start
+      while (windowStart < queryStart) {
+        if (logStart == logs.length) {
+          windowStart++;
+          continue;
+        }
+        int[] log = logs[logStart];
+        int server = log[0];
+        int time = log[1];
+
+        if (time == windowStart) {
+          Integer serverCount = window.get(server);
+          if (serverCount != null) {
+            if (serverCount.intValue() == 1) {
+              window.remove(server);
+            } else {
+              window.put(server, serverCount.intValue() - 1);
+            }
+          }
+          logStart++;
+        } else {
+          windowStart++;
+        }
+      }
+
+    } // end of topmost while loop
+
+    return ans;
   }
+
   public static void printList(ListNode list) {
     ListNode currNode = list;
 
@@ -80,10 +138,29 @@ class Solution {
     System.out.println("hey");
     Solution solution = new Solution();
     // System.out.println("aa: " + solution.isAnagram("abca", "aabc"));
-    int[] input = new int[] { 1, 1, 1, 2, 2, 3 };
+    // int[] input = new int[] { 1, 1, 1, 2, 2, 3 };
 
-    int ans = solution.findMin(new int[] { 3, 4, 5, 1, 2 });
-    System.out.println(ans);
+    int n = 4;
+
+    int[][] logs = new int[][] { { 4, 3 }, { 2, 16 }, { 1, 21 }, { 3, 22 }, { 1, 13 }, { 3, 10 }, { 2, 1 }, { 1, 12 },
+        { 4, 13 }, { 2, 18 } };
+    int x = 8;
+    int[] queries = new int[] { 14, 28, 29 };
+    // int n = 4;
+    // int[][] logs = new int[][] { { 2, 30 }, { 2, 5 }, { 3, 9 }, { 4, 21 } };
+    // int x = 9;
+    // int[] queries = new int[] { 11, 28, 16, 18 };
+    // int n = 3;
+    // int[][] logs = new int[][] { { 1, 3 }, { 2, 6 }, { 1, 5 } };
+    // int x = 5;
+    // int[] queries = new int[] { 10, 11 };
+    // int n = 3;
+    // int[][] logs = new int[][] { { 2, 4 }, { 2, 1 }, { 1, 2 }, { 3, 1 } };
+    // int x = 2;
+    // int[] queries = new int[] { 3, 4 };
+    int[] ans = solution.countServers(n, logs, x, queries);
+    System.out.println(Arrays.toString(ans));
+    // int ans = solution.findMin(new int[] { 3, 4, 5, 1, 2 });
     // int[] aa = solution.twoSum(new int[] { 2, 7, 11, 15 }, 9);
     // System.out.println("aa: " + Arrays.toString(aa));
     // aa = solution.twoSum(new int[] { 3, 2, 4 }, 6);
