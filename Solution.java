@@ -22,76 +22,6 @@ class ListNode {
   }
 }
 
-class Node {
-  String value;
-  int timestamp;
-
-  public Node(String xvalue, int xtimestamp) {
-    value = xvalue;
-    timestamp = xtimestamp;
-  }
-}
-
-class TimeMap {
-  Map<String, ArrayList<Node>> keys;
-  // foo->[[1,"bar"],[4,"bar2"]];->[[4,"bar2"],[1,"bar"]]
-  // O(nlog10^5) O(1)
-
-  public TimeMap() {
-    keys = new HashMap<>();
-  }
-
-  public void set(String key, String value, int timestamp) { //
-    ArrayList<Node> list = keys.get(key);
-    if (list == null) {
-      list = new ArrayList<Node>();
-      keys.put(key, list);
-    }
-    Node node = new Node(value, timestamp);
-    list.add(node);
-  }
-
-  public String get(String key, int timestamp) { // O(1 + logn)
-    ArrayList<Node> list = keys.get(key);
-    if (list == null) {
-      return "";
-    }
-    if (timestamp > list.get(list.size() - 1).timestamp) {
-      return list.get(list.size() - 1).value;
-    }
-    if (timestamp < list.get(0).timestamp) {
-      return "";
-    }
-
-    int left = 0;
-    int right = list.size() - 1;
-    int mid = -1;
-
-    while (left < right) {
-      mid = left + (right - left) / 2;
-      int midTimestamp = list.get(mid).timestamp;
-
-      if (midTimestamp == timestamp) {
-        return list.get(mid).value;
-      } else if (midTimestamp > timestamp) {
-        right = mid - 1;
-      } else { // midTimestamp < timestamp
-        left = mid;
-      }
-    }
-
-    if (list.get(right).timestamp <= timestamp) {
-      return list.get(right).value;
-    }
-
-    if (list.get(left).timestamp <= timestamp) {
-      return list.get(left).value;
-    }
-
-    return "";
-  }
-}
-
 class Solution {
   public int[] countServers(int n, int[][] logs, int x, int[] queries) {
     Arrays.sort(logs, (a, b) -> a[1] - b[1]);
@@ -202,29 +132,97 @@ class Solution {
     }
   }
 
-  public static void main(String[] args) {
-    System.out.println("hey");
-    String[] input = new String[] { "set", "get", "get", "set", "get", "get", "set", "set", "set", "set", "set",
-        "get" };
-    String[][] payload = { { "foo", "bar", "1" }, { "foo", "1" }, { "foo", "3" }, { "foo", "bar2", "4" },
-        { "foo", "4" },
-        { "foo", "5" }, { "foo", "zigzag", "7" }, { "foo", "conundrum", "8" },
-        { "foo", "hyperbole", "9" }, { "foo", "silhouette", "10" }, { "foo", "blasphemy", "11" }, { "foo", "9" } };
+  public int binarySearch(int[][] intervals, int time, char preference) {
+    int left = 0;
+    int right = intervals.length - 1;
+    while (left <= right) {
+      int mid = left + (right - left) / 2;
 
-    TimeMap obj = new TimeMap();
-    String[] output = new String[input.length];
-    for (int i = 0; i < input.length; i++) {
-      String[] data = payload[i];
-      if (input[i] == "set") {
-        obj.set(data[0], data[1], Integer.parseInt(data[2]));
-      } else {
-        output[i] = obj.get(data[0], Integer.parseInt(data[1]));
+      int midIntervalStart = intervals[mid][0];
+      int midIntervalEnd = intervals[mid][1];
+      // int newIntervalStart = newInterval[0];
+      // int newIntervalEnd = newInterval[1];
+
+      if (midIntervalStart <= time && time <= midIntervalEnd) {
+        // conflicting = true;
+        return mid;
+      }
+
+      if (time < midIntervalStart) {
+        right = mid - 1;
+      } else { // newIntervalStart > midIntervalEnd (more than this full interval )
+        left = mid + 1;
       }
     }
-    System.out.println(Arrays.toString((output)));
+
+    if (right == -1)
+      return right;
+    if (left == intervals.length)
+      return left;
+
+    if (preference == 's') {
+      return Math.max(left, right);
+    } else { // prefernce == 'e'
+      return Math.min(left, right);
+    }
+  }
+
+  public int[][] insert(int[][] intervals, int[] newInterval) {
+    int newIntervalStartIndex = binarySearch(intervals, newInterval[0], 's');
+    int newIntervalEndIndex = binarySearch(intervals, newInterval[1], 'e');
+    ArrayList<int[]> output = new ArrayList<>();
+    int afterMergeIndex = intervals.length;
+    for (int i = 0; i < newIntervalStartIndex; i++) {
+      output.add(intervals[i]);
+    }
+    if (newIntervalStartIndex == -1) {
+      if (newIntervalEndIndex == -1) {
+        output.add(newInterval);
+        afterMergeIndex = 0;
+      } else if (newIntervalEndIndex < intervals.length) {
+        // if(newInterval[1] >= intervals[newIntervalEndIndex][0]){
+        output.add(new int[] { newInterval[0], Math.max(newInterval[1], intervals[newIntervalEndIndex][1]) });
+        afterMergeIndex = newIntervalEndIndex + 1;
+        // }
+      } else { // new interval end out of bound
+        output.add(newInterval);
+      }
+    } else if (newIntervalStartIndex < intervals.length) {
+      if (newIntervalEndIndex < intervals.length) {
+        output.add(new int[] {
+            Math.min(newInterval[0], intervals[newIntervalStartIndex][0]),
+            Math.max(newInterval[1], intervals[newIntervalEndIndex][1])
+        });
+        afterMergeIndex = newIntervalEndIndex + 1;
+      } else {
+        output.add(new int[] {
+            Math.min(newInterval[0], intervals[newIntervalStartIndex][0]),
+            newInterval[1]
+        });
+      }
+    } else { // start of new interval outside of all ranges
+      output.add(newInterval);
+    }
+
+    for (int i = afterMergeIndex; i < intervals.length; i++) {
+      output.add(intervals[i]);
+    }
+    return output.toArray(new int[output.size()][]);
+  }
+
+  public static void main(String[] args) {
+    System.out.println("hey");
+    // int[][] intervals = { { 1, 3 }, { 6, 9 } };
+    // int[] newInterval = { 2, 5 };
+    // int[][] intervals = { { 1, 2 }, { 3, 5 }, { 6, 7 }, { 8, 10 }, { 12, 16 } };
+    // int[] newInterval = { 4, 8 };
+    int[][] intervals = { { 1, 5 } };
+    int[] newInterval = { 2, 7 };
+    Solution solution = new Solution();
+    int[][] output = solution.insert(intervals, newInterval);
+    System.out.println(Arrays.deepToString((output)));
     // null,"bar","bar",null,"bar2","bar2",null,null,null,null,null,"hyperbole"
 
-    Solution solution = new Solution();
     // System.out.println("aa: " + solution.isAnagram("abca", "aabc"));
     // int[]] input = new int[] { 1, 1, 1, 2, 2, 3 };
 
