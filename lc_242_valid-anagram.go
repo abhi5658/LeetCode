@@ -45,3 +45,55 @@ func isAnagram(s string, t string) bool {
 	}
 	return true
 }
+
+func isAnagram(s string, t string) bool {
+	if len(s) != len(t) {
+		return false
+	}
+
+	countMap := make(map[rune]int)
+	// for i := 0; i < len(s); i++ {
+	// 	c := rune(s[i])
+	// 	if count, ok := countMap[c]; ok {
+  //     if count == -1 {
+  //       delete(countMap,c)
+  //     }else{
+	// 		countMap[c] = count + 1
+  //     }
+	// 	} else {
+	// 		countMap[c] = 1
+	// 	}
+
+	// 	c = rune(t[i])
+	// 	if count, ok := countMap[c]; ok {
+	// 		if count == 1 {
+	// 			delete(countMap, c)
+	// 		} else {
+	// 			countMap[c] = count - 1
+	// 		}
+	// 	} else {
+	// 		countMap[c] = -1
+	// 	}
+	// }
+	// fmt.Println(fmt.Sprintf("%v", countMap))
+
+	// if len(countMap) == 0 {
+	// 	return true
+	// }
+	// return false
+
+  for _,c := range s {
+    countMap[c]++
+  }
+  for _,c := range t {
+    countMap[c]--
+  }
+  for _, count := range countMap{
+    if count != 0{
+      return false
+    }
+  }
+  return true
+
+
+}
